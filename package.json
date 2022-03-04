@@ -18,7 +18,7 @@
     "start:solution": "npm run -it docker:build && npm run docker:run",
     "test": "jest",
     "test:solution": "npm run docker:build && npm run docker:test",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch --verbose"
   },
   "keywords": [],
   "author": "",
