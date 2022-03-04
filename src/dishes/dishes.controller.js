@@ -9,6 +9,12 @@ const nextId = require("../utils/nextId");
 
 // middelware functions
 
+
+/**
+ * Skips to next function if property name is valid, otherwise sends error to error handler
+ * 
+ * @param {string} propertyName | property name from request body
+ */
 const bodyDataHas = propertyName => {
     return (req, res, next) => {
       const { data = {} } = req.body;
@@ -19,6 +25,15 @@ const bodyDataHas = propertyName => {
     };
   }
 
+
+/**
+ * Takes in dishId from request url, checks it that dish exists in dishes array, if it does
+ * then set local param to the dish object, otherwise sends error to error handler
+ * 
+ * @param {Object} req | the request body 
+ * @param {Object} res | the response body
+ * @param {Object} | next function in express 
+ */
 const dishExists = (req, res, next) => {
     const {dishId} = req.params
     const foundDish = dishes.find(dish => dish.id == dishId)
@@ -33,6 +48,15 @@ const dishExists = (req, res, next) => {
     }
 } 
 
+
+/**
+ * Checks that the price value in the dish object is a number and greater that zero,
+ * if not send error to error handler.
+ * 
+ * @param {Object} req | the request body 
+ * @param {Object} res | the response body
+ * @param {Object} | next function in express 
+ */
 const priceisValid = (req, res, next) => {
     const { data: { price } = {} } = req.body;
     if (typeof(price) !== 'number' || price <= 0) {
@@ -45,11 +69,31 @@ const priceisValid = (req, res, next) => {
 }
 
 
-// handler functions
+/*
+* handler functions
+*/
+
+
+/**
+ * sends list of all dishes to client
+ * 
+ * @param {Object} req | the request body 
+ * @param {Object} res | the response body
+ * @returns {Object} | dishes array 
+ */
 const list = (req, res) => {
     res.json({data: dishes})
 }
 
+
+
+/**
+ * Takes in new dish from request body, assigns new ID, then updates dishes array
+ * 
+ * @param {Object} req | the request body 
+ * @param {Object} res | the response body
+ * @returns {Object} | sends status 201 and newly created dish to client 
+ */
 const create = (req, res) => {
     let {data} = req.body
     data = {
@@ -60,10 +104,29 @@ const create = (req, res) => {
     res.status(201).json({data})
 }
 
+
+
+/**
+ * Sends specific dish to client in JSON format
+ *  
+ * @param {Object} req | the request body 
+ * @param {Object} res | the response body
+ * @returns {Object} | sends dish  
+ * 
+ */
 const read = (req, res) => {
     res.json({data: res.locals.dish})
 }
 
+
+
+/**
+ * Updates dish object to the new data provided
+ * 
+ * @param {Object} req | the request body 
+ * @param {Object} res | the response body
+ * @returns {Object} | sends status 200 and the updated dish to client 
+ */
 const update = (req, res, next) => {
     const {data: {id, name, description, price, image_url}} = req.body;
     const dish = res.locals.dish;
