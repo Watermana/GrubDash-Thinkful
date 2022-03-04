@@ -69,6 +69,27 @@ const priceisValid = (req, res, next) => {
 }
 
 
+
+/**
+ * If the id is provided in the request body, checks if that id matches the dishId from the url.
+ * If not sends error to error handler.
+ * 
+ * @param {Object} req | the request body 
+ * @param {Object} res | the response body
+ * @param {Object} | next function in express 
+ */
+ const matchId = (req, res, next) => {
+    const {data: {id} = {}} = req.body;
+    const {dishId} = req.params;
+    if(id && dishId !== id) {
+        return next({
+            status: 400,
+            message: `Dish id does not match route id. Dish: ${id}, Route:${dishId}`
+        })
+    }
+    return next();
+}
+
 /*
 * handler functions
 */
@@ -130,13 +151,6 @@ const read = (req, res) => {
 const update = (req, res, next) => {
     const {data: {id, name, description, price, image_url}} = req.body;
     const dish = res.locals.dish;
-    const {dishId} = req.params;
-    if(id && dishId !== id) {
-        return next({
-            status: 400,
-            message: `Dish id does not match route id. Dish: ${id}, Route:${dishId}`
-        })
-    }
     
     dish.name = name;
     dish.description = description;
@@ -160,6 +174,7 @@ module.exports = {
     ],
     update: [
         dishExists,
+        matchId,
         bodyDataHas("name"),
         bodyDataHas("description"),
         bodyDataHas("image_url"),
